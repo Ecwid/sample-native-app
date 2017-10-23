@@ -20,7 +20,7 @@
      }
 
 
-// Function to highlight the active menu tab
+// Function to highlight the active menu tab after mouse click
 
 function menu(item){
 	for (i=0; i<document.querySelectorAll('ul.nav.nav-links li').length; i++){
@@ -216,14 +216,33 @@ function saveUserData() {
 
 }
 
+function setDefaultOpenedMenu(id){
+// Hide content of all sections and show the first one by default on page load.
+	menu(id);
+
+	if (document.querySelectorAll('.section').length > 0){
+
+		for (i=0; i<document.querySelectorAll('.section').length; i++){
+			document.querySelectorAll('.section')[i].style.display = 'none';
+		}
+
+		document.querySelector('div#'+id).style.display = 'block';
+	}
+}
+
+
 // Main app function to determine if the user is new or just logs into the app
 
 EcwidApp.getAppStorage('exists', function(value){
 
   if (value != null) {
   		getUserData();
+  		// open Dashboard tab by default
+  		setDefaultOpenedMenu('dashboard');
   }
   else {
   		createUserData();
+  		// open Settings tab by default
+  		setDefaultOpenedMenu('settings');
   }
 })

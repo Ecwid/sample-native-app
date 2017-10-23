@@ -15,14 +15,16 @@
 
 <div id='appContent'>
 
+<!-- Page header. Make sure you show header as text or an icon only, not both. -->
 <h2>Native Application Prototype</h2>
 
 <!-- App menu navigation -->
-
+<!--Make sure to set '.active' class on the default menu item-->
 	<ul class="nav nav-links">
-	    <li id='dashboard' class="active"><a href="javascript:;" onclick="menu('dashboard');"><span>Dashboard</span></a></li>
+	    <li id='dashboard'><a href="javascript:;" onclick="menu('dashboard');"><span>Dashboard</span></a></li>
 	    <li id='settings'><a href="javascript:;" onclick="menu('settings')"><span>Settings</span></a></li>
 	    <li id='products'><a href="javascript:;" onclick="menu('products')"><span>Import test products</span></a></li>
+	    <li id='emptyPage'><a href="javascript:;" onclick="menu('emptyPage')"><span>Empty page</span></a></li>
 	</ul>
 
 <!-- Contents of the first tab -->
@@ -149,6 +151,7 @@
 	                  	<div class="block-row-desc">Use this toggle to let users enable/disable optional functions in your app.</div>
 	              	</div>
 	              	<div class="ecwid-u-2-8 block-control">
+	              		<!--Input field taken from Ecwid CSS Framework: https://developers.ecwid.com/ecwid-css-framework/#forms -->
 	                  	<label aria-hidden="true" class="checkbox big"><input onclick="saveUserData()" name="" type="checkbox" checked="">
 		                    <div data-off="disabled" data-on="enabled">
 		                        <div></div>
@@ -174,6 +177,7 @@
 	                 	<div class="ecwid-g-r block-row-info-full">
 	                     	<div class="ecwid-u-1-1">
 								<div class="fieldset">
+									<!--Input field taken from Ecwid CSS Framework: https://developers.ecwid.com/ecwid-css-framework/#forms -->
 									<div class="field field--medium">
 										<span class="fieldset__svg-icon"></span>
 										<label class="field__label">Account name</label>
@@ -237,6 +241,7 @@
 	                  <div class="block-row-title">Action button</div>
 	                  <div class="block-row-desc">Use this button to provide actions like uploading a file or opening an app section.</div>
 	              	</div>
+	              	<!--Button taken from Ecwid CSS Framework: https://developers.ecwid.com/ecwid-css-framework/#buttons -->
 	              	<div class="ecwid-u-2-8 block-control">
 	              		<button class="btn btn-default btn-medium">Choose file</button>
 	              	</div>
@@ -256,12 +261,21 @@
 	                  	<div>
 	                    	112 Products is successfully imported, <b>3 products are failed to import</b>. 12:45, Oct 23, 2015
 	                  	</div>
+	                  	<!--Button taken from Ecwid CSS Framework: https://developers.ecwid.com/ecwid-css-framework/#buttons -->
 	                  	<div>
 	                     	<button class="btn btn-primary" type="button">See details</button>
 	                  	</div>
 	              	</div>
 	          	</div>
 	        </div>
+	</div>
+</div>
+
+<div id="emptyPage" class='section'>
+	<div class="emptyPageImage">
+		<h3>No content to show!</h3>
+		<p>Go get some new orders, so we can show something here! :) <br/><a href="https://www.ecwid.com/blog/maximaze-sales-using-promos.html" target="_blank">How to get more sales</a></p>
+		<img src='website-img.png'/>
 	</div>
 </div>
 
@@ -288,16 +302,6 @@
         saveUserData();
     });
 
-// Hide content of all sections and show the first one by default
-
-if (document.querySelectorAll('.section').length > 0){
-
-	for (i=0; i<document.querySelectorAll('.section').length; i++){
-		document.querySelectorAll('.section')[i].style.display = 'none';
-	}
-
-	document.querySelectorAll('.section')[0].style.display = 'block';
-}
 </script>
 
 </div>
