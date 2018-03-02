@@ -1,3 +1,5 @@
+// Initialize the application
+
 	EcwidApp.init({
 	  app_id: "sample-native-app", // use your application namespace
 	  autoloadedflag: true, 
@@ -19,20 +21,24 @@
        var appState = storeData.app_state;
      }
 
+// Function to go to edit product label page
 
-// Function to highlight the active menu tab after mouse click
+function showEditPage(elementClass){
+	document.querySelector('.main').style.display = 'none';
+	document.querySelector(elementClass).style.display = 'block';
+	document.querySelector('.content-control-menu-nav').style.display = 'flex';
+}
 
-function menu(item){
-	for (i=0; i<document.querySelectorAll('ul.nav.nav-links li').length; i++){
-		document.querySelectorAll('ul.nav.nav-links li')[i].setAttribute('class','');
+
+// Function to retutn back to main app page after editing product label
+function goBack(){
+	document.querySelector('.content-control-menu-nav').style.display = 'none';
+	document.querySelector('.main').style.display = 'block';
+
+	// hide all separate pages for editing
+	for(i=0;i<document.querySelectorAll('.separate-editing-page').length; i++) {
+		document.querySelectorAll('.separate-editing-page')[i].style.display = 'none';
 	}
-
-	for (i=0; i<document.querySelectorAll('.section').length; i++){
-		document.querySelectorAll('.section')[i].style.display = 'none';
-	}
-
-	document.getElementById(item).setAttribute('class','active');
-	document.querySelector("div#"+item).style.display = 'block';
 }
 
 // Get info from store to display in dashboard
@@ -135,7 +141,19 @@ function getInfoForDashboard(){
 			document.querySelector("div#awaitingProcessing").innerHTML = apiResponse.total;
 		}
 	}
+}
 
+
+function parseAllKeys(allKeys){
+	for (i=0; i<allKeys.length; i++){
+		var currentKeyName = allKeys[i].key;
+		if(currentKeyName !== 'public'){
+			loadedConfig.private[currentKeyName] = allKeys[i].value;
+		} else {
+			loadedConfig.public = JSON.parse(allKeys[i].value);
+		}
+	}
+	console.log(loadedConfig);
 }
 
 
@@ -144,7 +162,8 @@ function getInfoForDashboard(){
 var initialConfig = {
 	syncOrders: 'true',
 	accountName: "crazyPotatoes",
-	exists: "yes"
+	exists: "yes",
+	dropdown: null
 };
 
 var loadedConfig = initialConfig;
@@ -161,6 +180,7 @@ function createUserData() {
 	document.querySelector('div#syncOrders input[type="checkbox"]').checked = initialConfig.syncOrders;
 	document.querySelector('div#accountName input[type="text"]').value = initialConfig.accountName;
 	document.querySelector('div#accountName .field__input').parentNode.classList.add('field--filled');
+	document.querySelector('div#dropdown select').value = initialConfig.dropdown;
 	// Setting flag to determine that we already created and saved defaults for this user
 
 	loadedConfig = initialConfig;
@@ -181,12 +201,17 @@ function getUserData() {
 		loadedConfig.accountName = accountName;
 	});
 
+	EcwidApp.getAppStorage("dropdown", function(dropdown){
+		loadedConfig.dropdown = dropdown;
+	});
+
 
 	setTimeout(function(){
 
 		document.querySelector('div#syncOrders input[type="checkbox"]').checked = (loadedConfig.syncOrders == 'true');
 		document.querySelector('div#accountName input[type="text"]').value = loadedConfig.accountName;
 		document.querySelector('div#accountName .field__input').parentNode.classList.add('field--filled');
+		document.querySelector('div#dropdown select').value = loadedConfig.dropdown;
 
 	}, 1500);
 
@@ -198,13 +223,14 @@ function getUserData() {
 
 function saveUserData() {
 
-	var d = document.getElementById("save");
-	d.className += " btn-loading";
+	// var d = document.getElementById("save");
+	// d.className += " btn-loading";
 
 	var saveData = loadedConfig;
 
 	saveData.syncOrders = String(document.querySelector('div#syncOrders input[type="checkbox"]').checked);
 	saveData.accountName = document.querySelector('div#accountName input[type="text"]').value;
+	saveData.dropdown = document.querySelector('div#dropdown select').value;
 
 	console.log(saveData);
 
@@ -216,33 +242,17 @@ function saveUserData() {
 
 }
 
-function setDefaultOpenedMenu(id){
-// Hide content of all sections and show the first one by default on page load.
-	menu(id);
-
-	if (document.querySelectorAll('.section').length > 0){
-
-		for (i=0; i<document.querySelectorAll('.section').length; i++){
-			document.querySelectorAll('.section')[i].style.display = 'none';
-		}
-
-		document.querySelector('div#'+id).style.display = 'block';
-	}
-}
-
 
 // Main app function to determine if the user is new or just logs into the app
 
-EcwidApp.getAppStorage('exists', function(value){
+EcwidApp.getAppStorage('installed', function(value){
 
   if (value != null) {
   		getUserData();
-  		// open Dashboard tab by default
-  		setDefaultOpenedMenu('dashboard');
   }
   else {
   		createUserData();
-  		// open Settings tab by default
-  		setDefaultOpenedMenu('settings');
   }
 })
+
+
