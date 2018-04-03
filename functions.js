@@ -8,18 +8,18 @@
 
 	var storeData = EcwidApp.getPayload();
 
-     var storeId = storeData.store_id;
-     var accessToken = storeData.access_token;
-     var language = storeData.lang;
-     var viewMode = storeData.view_mode;
+    var storeId = storeData.store_id;
+    var accessToken = storeData.access_token;
+    var language = storeData.lang;
+    var viewMode = storeData.view_mode;
 
-     if (storeData.public_token !== undefined){
-       var publicToken = storeData.public_token;
-     }
+    if (storeData.public_token !== undefined){
+      var publicToken = storeData.public_token;
+    }
 
-     if (storeData.app_state !== undefined){
-       var appState = storeData.app_state;
-     }
+    if (storeData.app_state !== undefined){
+      var appState = storeData.app_state;
+    }
 
 // Function to go to edit product label page
 
@@ -30,7 +30,8 @@ function showEditPage(elementClass){
 }
 
 
-// Function to retutn back to main app page after editing product label
+// Function to retutn back to main app page after editing product label page
+
 function goBack(){
 	document.querySelector('.content-control-menu-nav').style.display = 'none';
 	document.querySelector('.main').style.display = 'block';
@@ -41,204 +42,155 @@ function goBack(){
 	}
 }
 
-// Get info from store to display in dashboard
 
-function getInfoForDashboard(){
-	var xhttp = new XMLHttpRequest();
-	var requestURL = 'https://app.ecwid.com/api/v3/'+storeId+'/profile?token='+accessToken;
+// Reads values from HTML page and sends them to application config
+// To fill values successfully, the input, select or textarea elements on a page must have 'data-name' and 'data-visibility' attributes set. See appProto.html for examples
 
-	xhttp.open("GET", requestURL, true);
-	xhttp.send();
+function readValuesFromPage(){
 
-	xhttp.onreadystatechange = function() {
-		if (xhttp.readyState == 4 && xhttp.status == 200) {
-	    	var apiResponse = xhttp.responseText;
-			apiResponse = JSON.parse(apiResponse);	
-			document.querySelector("div#currency").innerHTML = apiResponse.formatsAndUnits.currency;
+	var applicationConfig = {
+		public: {},
+		private: {}
+	}
+
+	var allInputs = document.querySelectorAll('input, select, textarea');
+
+	for (i=0; i<allInputs.length; i++){
+		var fieldVisibility = allInputs[i].dataset.visibility;
+
+		if(fieldVisibility !== undefined){
+			if(allInputs[i].tagName == "INPUT"){
+					
+				if(allInputs[i].type == 'checkbox' || allInputs[i].type == 'radio'){
+					applicationConfig[fieldVisibility][allInputs[i].dataset.name] = String(allInputs[i].checked) ;
+				}
+				if(allInputs[i].type == 'text' || allInputs[i].type == 'number' || allInputs[i].type == 'date') {
+					applicationConfig[fieldVisibility][allInputs[i].dataset.name] = allInputs[i].value;	
+				}
+			}
+			if(allInputs[i].tagName == "SELECT" || allInputs[i].tagName == "TEXTAREA"){
+				applicationConfig[fieldVisibility][allInputs[i].dataset.name] = allInputs[i].value;
+			}
 		}
 	}
 
-	var xhttp2 = new XMLHttpRequest();
-	var requestURL2 = 'https://app.ecwid.com/api/v3/'+storeId+'/products?limit=1&token='+accessToken;
+	applicationConfig.public = JSON.stringify(applicationConfig.public);
 
-	xhttp2.open("GET", requestURL2, true);
-	xhttp2.send();
+	return applicationConfig;
+}
 
-	xhttp2.onreadystatechange = function() {
-		if (xhttp2.readyState == 4 && xhttp2.status == 200) {
-	    	var apiResponse = xhttp2.responseText;
-			apiResponse = JSON.parse(apiResponse);	
-			document.querySelector("div#productCount").innerHTML = apiResponse.total + " product(s)";
+// Reads values from provided config and sets them for inputs on the page. 
+// To fill values successfully, the input, select or textarea elements must have 'data-name' and 'data-visibility' attributes set. See appProto.html for examples
+
+function setValuesForPage(applicationConfig){
+
+	var applicationConfigTemp = {
+		public: {},
+		private: {}
+	};
+
+	// for cases when we get existing users' data
+
+	if (applicationConfig.constructor === Array){
+		for (i=0; i < applicationConfig.length; i++) {
+			if (applicationConfig[i].key !== 'public'){
+				applicationConfigTemp.private[applicationConfig[i].key] = applicationConfig[i].value;
+			} else {
+				applicationConfigTemp[applicationConfig[i].key] = applicationConfig[i].value;
+			}
 		}
+		applicationConfig = applicationConfigTemp;
 	}
+
+	applicationConfig.public = JSON.parse(applicationConfig.public);
+	var allInputs = document.querySelectorAll('input, select, textarea');
+
+	// Set values from config for input, select, textarea elements
 	
-	var xhttp7 = new XMLHttpRequest();
-	var requestURL7 = 'https://app.ecwid.com/api/v3/'+storeId+'/latest-stats?token='+accessToken;
+	for (i=0; i<allInputs.length; i++){
+		var fieldVisibility = allInputs[i].dataset.visibility;
 
-	xhttp7.open("GET", requestURL7, true);
-	xhttp7.send();
+		if(fieldVisibility !== undefined && applicationConfig[fieldVisibility][allInputs[i].dataset.name] !== undefined){
+			if(allInputs[i].tagName == "INPUT"){
 
-	xhttp7.onreadystatechange = function() {
-		if (xhttp7.readyState == 4 && xhttp7.status == 200) {
-	    	var apiResponse = xhttp7.responseText;
-			apiResponse = JSON.parse(apiResponse);	
-			document.querySelector("div#productsUpdated").innerHTML = "Last updated: " + apiResponse.productsUpdated;
+				if(allInputs[i].type == 'checkbox' || allInputs[i].type == 'radio'){
+					allInputs[i].checked = (applicationConfig[fieldVisibility][allInputs[i].dataset.name] == "true");
+					checkFieldChange(allInputs[i]);
+				}
+				if(allInputs[i].type == 'text' || allInputs[i].type == 'number' || allInputs[i].type == 'date') {
+					allInputs[i].value = applicationConfig[fieldVisibility][allInputs[i].dataset.name];
+					checkFieldChange(allInputs[i]);
+				}
+			}
+			if(allInputs[i].tagName == "SELECT" || allInputs[i].tagName == "TEXTAREA"){
+				allInputs[i].value = applicationConfig[fieldVisibility][allInputs[i].dataset.name];
+				checkFieldChange(allInputs[i]);
+			}
 		}
-	}
-
-	var xhttp3 = new XMLHttpRequest();
-	var requestURL3 = 'https://app.ecwid.com/api/v3/'+storeId+'/carts?limit=1&token='+accessToken;
-
-	xhttp3.open("GET", requestURL3, true);
-	xhttp3.send();
-
-	xhttp3.onreadystatechange = function() {
-		if (xhttp3.readyState == 4 && xhttp3.status == 200) {
-	    	var apiResponse = xhttp3.responseText;
-			apiResponse = JSON.parse(apiResponse);	
-			document.querySelector("div#abandonedSales").innerHTML = apiResponse.total;
-		}
-	}
-
-	var xhttp4 = new XMLHttpRequest();
-	var requestURL4 = 'https://app.ecwid.com/api/v3/'+storeId+'/customers?limit=1&token='+accessToken;
-
-	xhttp4.open("GET", requestURL4, true);
-	xhttp4.send();
-
-	xhttp4.onreadystatechange = function() {
-		if (xhttp4.readyState == 4 && xhttp4.status == 200) {
-	    	var apiResponse = xhttp4.responseText;
-			apiResponse = JSON.parse(apiResponse);	
-			document.querySelector("div#customersCount").innerHTML = apiResponse.total;
-		}
-	}
-
-	var xhttp5 = new XMLHttpRequest();
-	var requestURL5 = 'https://app.ecwid.com/api/v3/'+storeId+'/orders?limit=1&fulfillmentStatus=SHIPPED&token='+accessToken;
-
-	xhttp5.open("GET", requestURL5, true);
-	xhttp5.send();
-
-	xhttp5.onreadystatechange = function() {
-		if (xhttp5.readyState == 4 && xhttp5.status == 200) {
-	    	var apiResponse = xhttp5.responseText;
-			apiResponse = JSON.parse(apiResponse);	
-			document.querySelector("div#shippedOrders").innerHTML = apiResponse.total;
-		}
-	}
-
-	var xhttp6 = new XMLHttpRequest();
-	var requestURL6 = 'https://app.ecwid.com/api/v3/'+storeId+'/orders?limit=1&fulfillmentStatus=AWAITING_PROCESSING&token='+accessToken;
-
-	xhttp6.open("GET", requestURL6, true);
-	xhttp6.send();
-
-	xhttp6.onreadystatechange = function() {
-		if (xhttp6.readyState == 4 && xhttp6.status == 200) {
-	    	var apiResponse = xhttp6.responseText;
-			apiResponse = JSON.parse(apiResponse);	
-			document.querySelector("div#awaitingProcessing").innerHTML = apiResponse.total;
-		}
-	}
+	}	
 }
-
-
-function parseAllKeys(allKeys){
-	for (i=0; i<allKeys.length; i++){
-		var currentKeyName = allKeys[i].key;
-		if(currentKeyName !== 'public'){
-			loadedConfig.private[currentKeyName] = allKeys[i].value;
-		} else {
-			loadedConfig.public = JSON.parse(allKeys[i].value);
-		}
-	}
-	console.log(loadedConfig);
-}
-
 
 // Default settings for new accounts
 
 var initialConfig = {
-	syncOrders: 'true',
-	accountName: "crazyPotatoes",
-	exists: "yes",
-	dropdown: null
+	public: {
+		cashOnDelivery: "true",
+		condition: "NEW",
+		globalShippingRate: "true",
+		freeShippingRate: "false"
+	},
+	private: {
+		installed: "true",
+		instructionTitle: "crazyPotatoes"
+	}
 };
 
-var loadedConfig = initialConfig;
+initialConfig.public = JSON.stringify(initialConfig.public);
 
 // Executes when we have a new user install the app. It creates and sets the default data using Ecwid JS SDK and Application storage
 
 function createUserData() {
 
-	EcwidApp.setAppStorage(initialConfig, function(lala){
-		console.log('Initial user preferences saved!');
-		console.log(lala);
+	// Saves data for application storage 
+	EcwidApp.setAppStorage(initialConfig.private, function(value){
+		console.log('Initial private user preferences saved!');
 	});
 
-	document.querySelector('div#syncOrders input[type="checkbox"]').checked = initialConfig.syncOrders;
-	document.querySelector('div#accountName input[type="text"]').value = initialConfig.accountName;
-	document.querySelector('div#accountName .field__input').parentNode.classList.add('field--filled');
-	document.querySelector('div#dropdown select').value = initialConfig.dropdown;
-	// Setting flag to determine that we already created and saved defaults for this user
+	// Saves data for public app config
+	EcwidApp.setAppPublicConfig(initialConfig.public, function(value){
+		console.log('Initial public user preferences saved!');
+	});
 
-	loadedConfig = initialConfig;
+	// Function to prepopulate values of select, input and textarea elements based on default settings for new accounts
+	setValuesForPage(initialConfig);
 }
 
 
-
-
-// Executes if we have a user who logs in to the app not the first time. We load their preferences from Application storage with Ecwid JS SDK and display them in the app iterface
+// Executes if we have a user who logs in to the app not the first time. We load their preferences from Application storage with Ecwid JS SDK and display them in the app interface
 
 function getUserData() {
 
-	EcwidApp.getAppStorage("syncOrders", function(syncOrders){
-		loadedConfig.syncOrders = syncOrders;
+	// Retrieve all keys and values from application storage, including public app config. Set the values for select, input and textarea elements on a page in a callback
+
+	EcwidApp.getAppStorage(function(allValues){
+		setValuesForPage(allValues);
 	});
-
-	EcwidApp.getAppStorage("accountName", function(accountName){
-		loadedConfig.accountName = accountName;
-	});
-
-	EcwidApp.getAppStorage("dropdown", function(dropdown){
-		loadedConfig.dropdown = dropdown;
-	});
-
-
-	setTimeout(function(){
-
-		document.querySelector('div#syncOrders input[type="checkbox"]').checked = (loadedConfig.syncOrders == 'true');
-		document.querySelector('div#accountName input[type="text"]').value = loadedConfig.accountName;
-		document.querySelector('div#accountName .field__input').parentNode.classList.add('field--filled');
-		document.querySelector('div#dropdown select').value = loadedConfig.dropdown;
-
-	}, 1500);
 
 }
 
-
-
-// Executes when we need to save data. Gets all elements' values and saves them to Application storage via Ecwid JS SDK
+// Executes when we need to save data. Gets all elements' values and saves them to Application storage and public app config via Ecwid JS SDK
 
 function saveUserData() {
 
-	// var d = document.getElementById("save");
-	// d.className += " btn-loading";
+	var saveData = readValuesFromPage();
 
-	var saveData = loadedConfig;
-
-	saveData.syncOrders = String(document.querySelector('div#syncOrders input[type="checkbox"]').checked);
-	saveData.accountName = document.querySelector('div#accountName input[type="text"]').value;
-	saveData.dropdown = document.querySelector('div#dropdown select').value;
-
-	console.log(saveData);
-
-	EcwidApp.setAppStorage(saveData, function(savedData){
-		console.log('User preferences saved!');
-		console.log(savedData);
-		d.className = "btn btn-primary btn-large";
+	EcwidApp.setAppStorage(saveData.private, function(savedData){
+		console.log('Private preferences saved!');
 	});
+
+	EcwidApp.setAppPublicConfig(saveData.public, function(savedData){
+		console.log('Public preferences saved!');
+	})
 
 }
 
@@ -247,12 +199,12 @@ function saveUserData() {
 
 EcwidApp.getAppStorage('installed', function(value){
 
-  if (value != null) {
-  		getUserData();
-  }
-  else {
-  		createUserData();
-  }
+	if (value != null) {
+		getUserData();
+	}
+	else {
+		createUserData();
+	}
 })
 
 
