@@ -21,6 +21,7 @@ These functions support various user inputs:
 Start by marking user inputs with `data-*` elements with these names: 
 
 Name | Type | Description 
+---- | ---- | -----------
 data-visibility | string | Field visibility - where to save the value: to private or public application storage
 data-name | string | Field key to be used to save to application storage
 
