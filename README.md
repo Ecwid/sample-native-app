@@ -27,6 +27,7 @@ data-name | string | Field key to be used to save to application storage
 
 
 Possible values of `data-visibility`: `"public"`, `"private"`
+
 Possible values of `data-name`: any value, except for `"public"`
 
 2) Set default values for new users
