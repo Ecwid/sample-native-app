@@ -13,7 +13,7 @@
 
 <!-- Back button block START -->
 
-<div onclick="goBack();" class="content-control-menu-nav settings-page" style="">
+<div onclick="goBack();" class="content-control-menu-nav" style="">
 	<a class="horizontal-icolink icolink-small icolink-prepend">
 		<span class="icon-arr-left"></span> <span class="gwt-InlineLabel">BACK</span>
 	</a>
@@ -29,9 +29,6 @@
 				<h1 class="settings-page__title">Native app example</h1>
 				<div class="settings-page__subtitle">A quick way to get started with a native app</div>
 			</div>
-		</div>
-
-<div class="settings-page__body" style="padding-bottom: 0.1px">
 
 <!-- Welcome Alert block with additional info START -->
 
@@ -55,7 +52,6 @@
 	        </div>
 
 <!-- Welcome Alert block with additional info END -->
-
 
 <!-- Status card area START -->
 
@@ -181,7 +177,7 @@
 
 <!-- APP SETTINGS AREA START -->
 
-    <div class="settings-page__body settings" style="padding-bottom: 0.1px">
+    <div class="settings-page__section settings" style="padding-bottom: 0.1px">
         <div class="settings-page__titles settings-page__titles--left">
             <h2 class="settings-page__title">Settings</h2>
             <div class="settings-page__subtitle">Set up the application</div>
@@ -272,7 +268,7 @@
 					                        	<!-- Cash on delivery toggle. Use data attributes as below to save and update the value to/from application storage via functions.js -->
 
 					                            <input data-name="cashOnDelivery" data-visibility="public" class='field__input' name="" type="checkbox" checked="">
-					                            
+
 					                            <div data-on="enabled" data-off="disabled">
 					                                <div></div>
 					                            </div>
@@ -304,7 +300,7 @@
 
 											<!-- Instruction title input. Use data attributes as below to save and update the value to/from application storage via functions.js -->
 											<input data-name="instructionTitle" data-visibility="private" type="text" class="field__input" tabindex="4" maxlength="64">
-											
+
 
 											<div class="field__placeholder">Instruction Title</div>
 											<span class="field-state--success">
@@ -327,7 +323,7 @@
 										<div class="fieldset__title" style="">Condition</div>
 										<div>
 											<div>
-												<div class="field field--medium field--filled"><label class="field__label"></label> 
+												<div class="field field--medium field--filled"><label class="field__label"></label>
 
 												<!-- Condition dropdown list. Use data attributes as below to save and update the value to/from application storage via functions.js -->
 
@@ -367,7 +363,7 @@
 			            <div class="form-area__content">
 			                <p>Select a Facebook group for your store to use it for communication with your customers. You must have admin permissions for this page.</p>
 			                <p>Select a Facebook group for your store to use it for communication with your customers. You must have admin permissions for this page.</p>
-			            
+
 			            <div class="radio">
 						    <label for="global_shipping_rate">
 
@@ -400,12 +396,12 @@
 			            </div>
 			        </div>
 					</div>
-				</div>	
+				</div>
 
 				</div>
 			</div>
 		</div>
-	<!-- </div> -->	
+	<!-- </div> -->
 
 <!-- Shipping rules preferences END -->
 
@@ -452,7 +448,7 @@
             </div>
         </div>
         </div>
-        
+
  	</div>
 </div>
 </div>
@@ -515,7 +511,7 @@
 					                        <!-- Company phone input. Use data attributes as below to save and update the value to/from application storage via functions.js -->
 
 					                        <input data-name="companyPhone" data-visibility="private" type="text" class="field__input" tabindex="1" maxlength="200">
-					                        
+
 					                        <div class="field__placeholder">Enter your company phone number</div>
 					                        <span class="field-state--success">
 					                            <svg xmlns="http://www.w3.org/2000/svg" width="26px" height="26px" viewBox="0 0 26 26" focusable="false"><path d="M5 12l5.02 4.9L21.15 4c.65-.66 1.71-.66 2.36 0 .65.67.65 1.74 0 2.4l-12.3 14.1c-.33.33-.76.5-1.18.5-.43 0-.86-.17-1.18-.5l-6.21-6.1c-.65-.66-.65-1.74 0-2.41.65-.65 1.71-.65 2.36.01z"></path></svg>
@@ -599,16 +595,16 @@
 
 		elms[i].addEventListener('change', function() {
 			if (this.value) {
-				saveUserData(); 
+				saveUserData();
 			}
-			else {				
+			else {
 				saveUserData();
 			}
 		}, false);
 
 		elms[i].addEventListener('click', function() {
 			if (this.value) {
-				saveUserData(); 
+				saveUserData();
 			}
 			else {
 				saveUserData();
